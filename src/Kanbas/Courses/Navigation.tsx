@@ -1,36 +1,83 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 export default function CoursesNavigation() {
+  const { pathname } = useLocation();
   return (
-    <div id="wd-courses-navigation">
-      <Link id="wd-course-home-link" to="/Kanbas/Courses/1234/Home">
+    <div
+      id="wd-courses-navigation"
+      className="wd list-group fs-5 rounded-0 d-none d-lg-block"
+    >
+      <Link
+        to="/Kanbas/Courses/1234/Home"
+        id="wd-course-home-link"
+        className={`list-group-item border border-0 ${
+          pathname.includes("/Home") ? "active" : ""
+        }`}
+      >
         Home
       </Link>
       <br />
-      <Link id="wd-course-modules-link" to="/Kanbas/Courses/1234/Modules">
-        Modules
+      <Link
+        to="/Kanbas/Courses/1234/Modules"
+        id="wd-course-modules-link"
+        className={`list-group-item text-danger border border-0 ${
+          pathname.includes("/Modules") ? "active" : ""
+        }`}
+      >
+        {" "}
+        Modules{" "}
       </Link>
       <br />
-      <Link id="wd-course-piazza-link" to="/Kanbas/Courses/1234/Piazza">
-        Piazza
+      <Link
+        to="/Kanbas/Courses/1234/Piazza"
+        id="wd-course-piazza-link"
+        className={`list-group-item text-danger border border-0 ${
+          pathname.includes("/Piazza") ? "active" : ""
+        }`}
+      >
+        {" "}
+        Piazza{" "}
       </Link>
       <br />
-      <Link id="wd-course-zoom-link" to="/Kanbas/Courses/1234/Zoom">
-        Zoom
+      <Link
+        to="/Kanbas/Courses/1234/Zoom"
+        id="wd-course-zoom-link"
+        className={`list-group-item text-danger border border-0 ${
+          pathname.includes("/Zoom") ? "active" : ""
+        }`}
+      >
+        {" "}
+        Zoom{" "}
       </Link>
       <br />
-      <Link id="wd-course-quizzes-link" to="/Kanbas/Courses/1234/Assignments">
-        Assignments
+      <Link
+        to="/Kanbas/Courses/1234/Assignments"
+        id="wd-course-quizzes-link"
+        className={`list-group-item text-danger border border-0 ${
+          pathname.includes("/Assignments") ? "active" : ""
+        }`}
+      >
+        {" "}
+        Assignments{" "}
       </Link>
       <br />
-      <Link id="wd-course-assignments-link" to="/Kanbas/Courses/1234/Quizzes">
-        Quizzes
+      <Link
+        to="/Kanbas/Courses/1234/Quizzes"
+        id="wd-course-assignments-link"
+        className={`list-group-item text-danger border border-0 ${
+          pathname.includes("/Quizzes") ? "active" : ""
+        }`}
+      >
+        {" "}
+        Quizzes{" "}
       </Link>
       <br />
-      <Link id="wd-course-grades-link" to="/Kanbas/Courses/1234/Grades">
-        Grades
-      </Link>
-      <br />
-      <Link id="wd-course-people-link" to="/Kanbas/People">
+      <Link
+        to="/Kanbas/Courses/:cid/People"
+        id="wd-course-people-link"
+        className={`list-group-item text-danger border border-0 ${
+          pathname.includes("/People") ? "active" : ""
+        }`}
+      >
         People
       </Link>
       <br />
