@@ -4,7 +4,6 @@ import Modules from "./Modules";
 import Home from "./Home";
 import Assignments from "./Assignments";
 import AssignmentEditor from "./Assignments/Editor";
-import AssignmentEditor1 from "./Assignments/Edit";
 import { FaAlignJustify } from "react-icons/fa";
 import PeopleTable from "./People/Table";
 

@@ -20,8 +20,8 @@ export default function AssignmentsControls() {
       </button>
       <div
         id="wd-search-assignment"
-        className="input-group border border-black"
-        style={{ width: "250px" }}
+        className="input-group border border-black flex-box ms-2 mt-4"
+        style={{ width: "250px", height: "45px" }}
       >
         <span className="input-group-text bg-white border-0">
           <IoMdSearch />
