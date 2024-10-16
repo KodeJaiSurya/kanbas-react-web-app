@@ -1,5 +1,10 @@
 import "./index.css";
+import { useParams } from "react-router";
+import { assignments } from "../../Database";
+import { Link } from "react-router-dom";
 export default function AssignmentEditor() {
+  const { aid, cid } = useParams();
+  const assignment = assignments.find((assignment) => assignment._id === aid);
   return (
     <div id="wd-assignments-editor" className="container mt-4">
       <div className="row mb-3">
@@ -10,7 +15,7 @@ export default function AssignmentEditor() {
           <input
             id="wd-name"
             className="form-control"
-            value="A1 - ENV + HTML"
+            value={assignment ? assignment.title : ""}
           />
         </div>
       </div>
@@ -26,8 +31,7 @@ export default function AssignmentEditor() {
             rows={10}
             cols={40}
           >
-            The assignment is available online. Submit a link to the landing
-            page of...
+            {assignment ? assignment.description : ""}
           </textarea>
         </div>
       </div>
@@ -40,7 +44,7 @@ export default function AssignmentEditor() {
           <input
             id="wd-points"
             className="form-control w-50 d-inline-block"
-            value={100}
+            value={assignment ? assignment.points : ""}
           />
         </div>
       </div>
@@ -49,7 +53,11 @@ export default function AssignmentEditor() {
           <label htmlFor="wd-group" className="form-label me-3">
             Assignment Group
           </label>
-          <select id="wd-group" className="form-select w-50 d-inline-block">
+          <select
+            id="wd-group"
+            defaultValue="assignments"
+            className="form-select w-50 d-inline-block"
+          >
             <option value="assignments">Assignments</option>
             <option value="quizzes">Quizzes</option>
             <option value="mid">MidTerm</option>
@@ -63,6 +71,7 @@ export default function AssignmentEditor() {
             Display Grade as
           </label>
           <select
+            defaultValue="points"
             id="wd-display-grade-as"
             className="form-select w-50 d-inline-block"
           >
@@ -170,7 +179,7 @@ export default function AssignmentEditor() {
                 id="wd-due-date"
                 className="form-control"
                 type="date"
-                defaultValue="2024-05-13"
+                defaultValue={assignment ? assignment.dueDate : ""}
               />
             </div>
 
@@ -193,7 +202,7 @@ export default function AssignmentEditor() {
                   id="wd-available-from"
                   className="form-control"
                   type="date"
-                  defaultValue="2024-05-06"
+                  defaultValue={assignment ? assignment.availableDate : ""}
                 />
               </div>
               <div className="col">
@@ -201,7 +210,7 @@ export default function AssignmentEditor() {
                   id="wd-available-until"
                   className="form-control"
                   type="date"
-                  defaultValue="2024-05-20"
+                  defaultValue={assignment ? assignment.dueDate : ""}
                 />
               </div>
             </div>
@@ -216,12 +225,21 @@ export default function AssignmentEditor() {
       <div className="row mt-3">
         <hr />
         <div className="col text-end">
-          <button id="wd-save-button" className="btn btn-success float-end">
+          <Link
+            to={`/Kanbas/Courses/${cid}/Assignments`}
+            id="wd-save-button"
+            className="btn btn-success float-end"
+          >
             Save
-          </button>
-          <button id="ed-cancel-button" className="btn btn-secondary ms-2 me-2">
+          </Link>
+
+          <Link
+            to={`/Kanbas/Courses/${cid}/Assignments`}
+            id="wd-cancel-button"
+            className="btn btn-secondary ms-2 me-2"
+          >
             Cancel
-          </button>
+          </Link>
         </div>
       </div>
     </div>
