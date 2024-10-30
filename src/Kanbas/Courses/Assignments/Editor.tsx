@@ -15,7 +15,7 @@ export default function AssignmentEditor() {
           <input
             id="wd-name"
             className="form-control"
-            value={assignment ? assignment.title : ""}
+            value={assignment ? assignment.title : "New Assignment"}
           />
         </div>
       </div>
@@ -31,7 +31,7 @@ export default function AssignmentEditor() {
             rows={10}
             cols={40}
           >
-            {assignment ? assignment.description : ""}
+            {assignment ? assignment.description : "New Description"}
           </textarea>
         </div>
       </div>
@@ -44,7 +44,7 @@ export default function AssignmentEditor() {
           <input
             id="wd-points"
             className="form-control w-50 d-inline-block"
-            value={assignment ? assignment.points : ""}
+            value={assignment ? assignment.points : "100"}
           />
         </div>
       </div>
@@ -179,7 +179,11 @@ export default function AssignmentEditor() {
                 id="wd-due-date"
                 className="form-control"
                 type="date"
-                defaultValue={assignment ? assignment.dueDate : ""}
+                defaultValue={
+                  assignment
+                    ? assignment.dueDate
+                    : new Date().toISOString().split("T")[0]
+                }
               />
             </div>
 
@@ -202,7 +206,11 @@ export default function AssignmentEditor() {
                   id="wd-available-from"
                   className="form-control"
                   type="date"
-                  defaultValue={assignment ? assignment.availableDate : ""}
+                  defaultValue={
+                    assignment
+                      ? assignment.availableDate
+                      : new Date().toISOString().split("T")[0]
+                  }
                 />
               </div>
               <div className="col">
@@ -210,7 +218,11 @@ export default function AssignmentEditor() {
                   id="wd-available-until"
                   className="form-control"
                   type="date"
-                  defaultValue={assignment ? assignment.dueDate : ""}
+                  defaultValue={
+                    assignment
+                      ? assignment.dueDate
+                      : new Date().toISOString().split("T")[0]
+                  }
                 />
               </div>
             </div>
