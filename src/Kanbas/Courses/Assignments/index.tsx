@@ -1,40 +1,80 @@
 import { BsGripVertical } from "react-icons/bs";
-import AssignmentsControls from "./AssignmentsControls";
 import LessonControlButtons from "../Modules/LessonControlButtons";
-import ExamTypeControl from "./ExamTypeControl";
 import { IoEllipsisVertical } from "react-icons/io5";
+import { FaTrash } from "react-icons/fa";
 import { BsPlus } from "react-icons/bs";
+import { FaPlus } from "react-icons/fa6";
+import { IoMdSearch } from "react-icons/io";
 import { GrDocumentText } from "react-icons/gr";
 import { useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import React, { useState } from "react";
-import {
-  addAssignment,
-  deleteAssignment,
-  updateAssignment,
-  setAssignment,
-} from "./reducer";
+import { state } from "../../store";
+import { deleteAssignment } from "./reducer";
+import { Link } from "react-router-dom";
+import FacultyRestrictedRoute from "../../FacultyRestrictedRoute";
 
 export default function Assignments() {
   const { cid } = useParams();
-  const { assignments } = useSelector((state: any) => state.assignmentsReducer);
+  const assignmentList = useSelector(
+    (state: state) => state.assignmentsReducer.assignments
+  );
   const dispatch = useDispatch();
-  const delAssignment = (assignmentID: string) => {
+  const delAssignment = (aID: string) => {
     const dialog = window.confirm(
       "Are you sure you want to delete this Assignment?"
     );
     if (dialog) {
-      dispatch(deleteAssignment(assignmentID));
+      dispatch(deleteAssignment(aID));
     }
   };
+
   return (
     <div
       id="wd-assignments"
       style={{ marginLeft: "30px", marginRight: "30px" }}
     >
-      <AssignmentsControls />
-      <br />
-      <br />
+      <div id="wd-assign-controls" className="text-nowrap">
+        <FacultyRestrictedRoute>
+          <Link to={`/Kanbas/Courses/${cid}/Assignments/Editor`}>
+            <button
+              id="wd-add-assignment-btn"
+              className="btn btn-lg btn-danger me-1 float-end"
+              onClick={() => {}}
+            >
+              <FaPlus
+                className="position-relative me-2"
+                style={{ bottom: "1px" }}
+              />
+              Assignment
+            </button>
+          </Link>
+          <button
+            id="wd-add-group-btn"
+            className="btn btn-lg btn-secondary me-1 float-end"
+          >
+            <FaPlus
+              className="position-relative me-2"
+              style={{ bottom: "1px" }}
+            />
+            Group
+          </button>
+        </FacultyRestrictedRoute>
+        <div
+          id="wd-search-assignment"
+          className="input-group border border-black flex-box ms-2 mt-4"
+          style={{ width: "250px", height: "45px" }}
+        >
+          <span className="input-group-text bg-white border-0">
+            <IoMdSearch />
+          </span>
+          <input
+            type="text"
+            className="border-0"
+            placeholder="Search..."
+            style={{ width: "209px" }}
+          />
+        </div>
+      </div>
       <br />
       <br />
       <ul id="wd-assignment-list" className="list-group rounded-0">
@@ -54,7 +94,7 @@ export default function Assignments() {
             </div>
           </div>
           <ul className="wd-lessons list-group rounded-0">
-            {assignments
+            {assignmentList
               .filter((assignment) => assignment.course === cid)
               .map((assignment) => (
                 <li className="d-flex align-items-center wd-lesson list-group-item ps-1">
@@ -76,7 +116,15 @@ export default function Assignments() {
                       {assignment.points}pts
                     </p>
                   </div>
+
                   <LessonControlButtons />
+
+                  <FacultyRestrictedRoute>
+                    <FaTrash
+                      className="text-danger me-2 mb-1"
+                      onClick={() => delAssignment(assignment._id)}
+                    />
+                  </FacultyRestrictedRoute>
                 </li>
               ))}
           </ul>

@@ -7,7 +7,7 @@ export interface state {
     modules: any[];
     module: any;
   };
-  assignmentReducer: {
+  assignmentsReducer: {
     assignments: any[];
     assignment: any;
   };

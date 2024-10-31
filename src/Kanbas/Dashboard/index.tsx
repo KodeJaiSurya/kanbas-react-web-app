@@ -3,6 +3,7 @@ import "./index.css";
 import { useSelector } from "react-redux";
 import * as db from "../Database";
 import FacultyRestrictedRoute from "../FacultyRestrictedRoute";
+import StudentRoute from "./StudentRoute";
 export default function Dashboard({
   courses,
   course,
@@ -58,6 +59,11 @@ export default function Dashboard({
       </FacultyRestrictedRoute>
       <h2 id="wd-dashboard-published">Published Courses ({courses.length})</h2>
       <hr />
+      <StudentRoute>
+        <div>
+          <button className="flex-end blue">Enrollment</button>
+        </div>
+      </StudentRoute>
       <div id="wd-dashboard-courses" className="row">
         <div className="row row-cols-1 row-cols-md-5 g-4">
           {courses

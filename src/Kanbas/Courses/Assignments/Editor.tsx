@@ -1,10 +1,39 @@
 import "./index.css";
-import { useParams } from "react-router";
-import { assignments } from "../../Database";
+import { useParams, useNavigate } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
+import { state } from "../../store";
+import { addAssignment, setAssignment, updateAssignment } from "./reducer";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
+
 export default function AssignmentEditor() {
   const { aid, cid } = useParams();
-  const assignment = assignments.find((assignment) => assignment._id === aid);
+  const navigate = useNavigate();
+  const assignmentList = useSelector(
+    (state: state) => state.assignmentsReducer.assignments
+  );
+  const assignment = useSelector(
+    (state: state) => state.assignmentsReducer.assignment
+  );
+  const dispatch = useDispatch();
+  const handleSave = () => {
+    if (aid !== undefined) {
+      if (!aid.localeCompare("Editor")) {
+        dispatch(addAssignment({ ...assignment, course: cid }));
+      } else {
+        dispatch(updateAssignment(assignment));
+      }
+    }
+    navigate(`/Kanbas/Courses/${cid}/Assignments`);
+  };
+
+  useEffect(() => {
+    let a = { title: "NEW", description: "" };
+    if (aid !== "Editor") {
+      a = assignmentList.find((assignment) => assignment._id === aid);
+    }
+    dispatch(setAssignment(a));
+  }, [aid]);
   return (
     <div id="wd-assignments-editor" className="container mt-4">
       <div className="row mb-3">
@@ -13,9 +42,13 @@ export default function AssignmentEditor() {
             Assignment Name
           </label>
           <input
+            type="text"
             id="wd-name"
             className="form-control"
-            value={assignment ? assignment.title : "New Assignment"}
+            value={assignment.title}
+            onChange={(e) =>
+              dispatch(setAssignment({ ...assignment, title: e.target.value }))
+            }
           />
         </div>
       </div>
@@ -30,9 +63,13 @@ export default function AssignmentEditor() {
             className="form-control"
             rows={10}
             cols={40}
-          >
-            {assignment ? assignment.description : "New Description"}
-          </textarea>
+            value={assignment.description}
+            onChange={(e) =>
+              dispatch(
+                setAssignment({ ...assignment, description: e.target.value })
+              )
+            }
+          ></textarea>
         </div>
       </div>
 
@@ -42,9 +79,13 @@ export default function AssignmentEditor() {
             Points
           </label>
           <input
+            type="number"
             id="wd-points"
             className="form-control w-50 d-inline-block"
-            value={assignment ? assignment.points : "100"}
+            value={assignment.points}
+            onChange={(e) =>
+              dispatch(setAssignment({ ...assignment, points: e.target.value }))
+            }
           />
         </div>
       </div>
@@ -179,10 +220,11 @@ export default function AssignmentEditor() {
                 id="wd-due-date"
                 className="form-control"
                 type="date"
-                defaultValue={
-                  assignment
-                    ? assignment.dueDate
-                    : new Date().toISOString().split("T")[0]
+                value={assignment.dueDate}
+                onChange={(e) =>
+                  dispatch(
+                    setAssignment({ ...assignment, dueDate: e.target.value })
+                  )
                 }
               />
             </div>
@@ -206,10 +248,14 @@ export default function AssignmentEditor() {
                   id="wd-available-from"
                   className="form-control"
                   type="date"
-                  defaultValue={
-                    assignment
-                      ? assignment.availableDate
-                      : new Date().toISOString().split("T")[0]
+                  value={assignment.availableDate}
+                  onChange={(e) =>
+                    dispatch(
+                      setAssignment({
+                        ...assignment,
+                        availableDate: e.target.value,
+                      })
+                    )
                   }
                 />
               </div>
@@ -218,10 +264,11 @@ export default function AssignmentEditor() {
                   id="wd-available-until"
                   className="form-control"
                   type="date"
-                  defaultValue={
-                    assignment
-                      ? assignment.dueDate
-                      : new Date().toISOString().split("T")[0]
+                  value={assignment.dueDate}
+                  onChange={(e) =>
+                    dispatch(
+                      setAssignment({ ...assignment, dueDate: e.target.value })
+                    )
                   }
                 />
               </div>
@@ -237,13 +284,13 @@ export default function AssignmentEditor() {
       <div className="row mt-3">
         <hr />
         <div className="col text-end">
-          <Link
-            to={`/Kanbas/Courses/${cid}/Assignments`}
+          <button
             id="wd-save-button"
             className="btn btn-success float-end"
+            onClick={handleSave}
           >
             Save
-          </Link>
+          </button>
 
           <Link
             to={`/Kanbas/Courses/${cid}/Assignments`}
