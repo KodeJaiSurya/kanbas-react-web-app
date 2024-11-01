@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import modulesReducer from "./Courses/Modules/reducer";
 import accountReducer from "./Account/reducer";
 import assignmentsReducer from "./Courses/Assignments/reducer";
+import enrollmentsReducer from "./Dashboard/reducer";
 export interface state {
   modulesReducer: {
     modules: any[];
@@ -17,6 +18,7 @@ const store = configureStore({
     modulesReducer,
     accountReducer,
     assignmentsReducer,
+    enrollmentsReducer,
   },
 });
 export default store;

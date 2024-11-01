@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
 import "./index.css";
-import { useSelector } from "react-redux";
-import * as db from "../Database";
+import { useDispatch, useSelector } from "react-redux";
 import FacultyRestrictedRoute from "../FacultyRestrictedRoute";
 import StudentRoute from "./StudentRoute";
+import { useState } from "react";
+import { setEnrollments } from "./reducer";
 export default function Dashboard({
   courses,
   course,
@@ -20,10 +21,52 @@ export default function Dashboard({
   updateCourse: () => void;
 }) {
   const { currentUser } = useSelector((state: any) => state.accountReducer);
-  const { enrollments } = db;
+
+  const { enrollments } = useSelector((state: any) => state.enrollmentsReducer);
+
+  const [showAll, setShowAll] = useState(false);
+
+  const toggleShowCourses = () => {
+    setShowAll(!showAll);
+  };
+
+  const enroll = (courseId: string) => {
+    dispatch(
+      setEnrollments({
+        user: currentUser._id,
+        course: courseId,
+        enroll: true,
+      })
+    );
+  };
+
+  const unenroll = (courseID: string) => {
+    dispatch(
+      setEnrollments({
+        user: currentUser._id,
+        course: courseID,
+        enroll: false,
+      })
+    );
+  };
+  const filteredCourses = courses.filter((course) => {
+    if (currentUser.role === "FACULTY") {
+      return true;
+    } else if (showAll) {
+      return true;
+    } else {
+      return (enrollments || []).some(
+        (enrollment: any) => enrollment.course === course._id
+      );
+    }
+  });
+
+  const dispatch = useDispatch();
   return (
     <div id="wd-dashboard">
       <h1 id="wd-dashboard-title">Dashboard</h1> <hr />
+      {/* <pre>{JSON.stringify(enrollments, null, 2)}</pre> */}
+      <hr />
       <FacultyRestrictedRoute>
         <h5>
           New Course
@@ -61,73 +104,93 @@ export default function Dashboard({
       <hr />
       <StudentRoute>
         <div>
-          <button className="flex-end blue">Enrollment</button>
+          <button
+            className="btn btn-primary float-end"
+            onClick={toggleShowCourses}
+          >
+            Enrollment
+            {/* {showAll ? "Enrollment" : "Enrollment1"} */}
+          </button>
         </div>
       </StudentRoute>
       <div id="wd-dashboard-courses" className="row">
         <div className="row row-cols-1 row-cols-md-5 g-4">
-          {courses
-            .filter((course) =>
-              enrollments.some(
-                (enrollment) =>
-                  enrollment.user === currentUser._id &&
-                  enrollment.course === course._id
-              )
-            )
-            .map((course) => (
-              <div
-                className="wd-dashboard-course col"
-                style={{ width: "300px" }}
-              >
-                <div className="card rounded-3 overflow-hidden">
-                  <Link
-                    to={`/Kanbas/Courses/${course._id}/Home`}
-                    className="wd-dashboard-course-link text-decoration-none text-dark"
-                  >
-                    <img
-                      src="/images/reactjs.jpg"
-                      width="100%"
-                      height={160}
-                      alt="Course"
-                    />
-                    <div className="card-body">
-                      <h5 className="wd-dashboard-course-title card-title">
-                        {course.name}
-                      </h5>
-                      <p
-                        className="wd-dashboard-course-title card-text overflow-y-hidden"
-                        style={{ maxHeight: 100 }}
+          {filteredCourses.map((course) => (
+            <div className="wd-dashboard-course col" style={{ width: "300px" }}>
+              <div className="card rounded-3 overflow-hidden">
+                <Link
+                  to={`/Kanbas/Courses/${course._id}/Home`}
+                  className="wd-dashboard-course-link text-decoration-none text-dark"
+                >
+                  <img
+                    src="/images/reactjs.jpg"
+                    width="100%"
+                    height={160}
+                    alt="Course"
+                  />
+                  <div className="card-body">
+                    <h5 className="wd-dashboard-course-title card-title">
+                      {course.name}
+                    </h5>
+                    <p
+                      className="wd-dashboard-course-title card-text overflow-y-hidden"
+                      style={{ maxHeight: 100 }}
+                    >
+                      {course.description}
+                    </p>
+                    <button className="btn btn-primary"> Go </button>
+                    <FacultyRestrictedRoute>
+                      <button
+                        onClick={(event) => {
+                          event.preventDefault();
+                          deleteCourse(course._id);
+                        }}
+                        className="btn btn-danger float-end"
+                        id="wd-delete-course-click"
                       >
-                        {course.description}
-                      </p>
-                      <button className="btn btn-primary"> Go </button>
-                      <FacultyRestrictedRoute>
+                        Delete
+                      </button>
+                      <button
+                        id="wd-edit-course-click"
+                        onClick={(event) => {
+                          event.preventDefault();
+                          setCourse(course);
+                        }}
+                        className="btn btn-warning me-2 float-end"
+                      >
+                        Edit
+                      </button>
+                    </FacultyRestrictedRoute>
+                    <StudentRoute>
+                      {(enrollments || []).some(
+                        (enrollment: any) => enrollment.course === course._id
+                      ) ? (
                         <button
                           onClick={(event) => {
                             event.preventDefault();
-                            deleteCourse(course._id);
+                            unenroll(course._id);
                           }}
                           className="btn btn-danger float-end"
-                          id="wd-delete-course-click"
                         >
-                          Delete
+                          Unenroll
                         </button>
+                      ) : (
                         <button
-                          id="wd-edit-course-click"
                           onClick={(event) => {
                             event.preventDefault();
-                            setCourse(course);
+                            enroll(course._id);
                           }}
-                          className="btn btn-warning me-2 float-end"
+                          className="btn btn-success float-end"
                         >
-                          Edit
+                          Enroll
                         </button>
-                      </FacultyRestrictedRoute>
-                    </div>
-                  </Link>
-                </div>
+                      )}
+                    </StudentRoute>
+                  </div>
+                </Link>
               </div>
-            ))}
+            </div>
+          ))}
         </div>
       </div>
     </div>

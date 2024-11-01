@@ -28,12 +28,12 @@ export default function AssignmentEditor() {
   };
 
   useEffect(() => {
-    let a = { title: "NEW", description: "" };
+    let a = { title: "New Assignment", description: "" };
     if (aid !== "Editor") {
       a = assignmentList.find((assignment) => assignment._id === aid);
     }
     dispatch(setAssignment(a));
-  }, [aid]);
+  }, [aid, assignmentList, dispatch]);
   return (
     <div id="wd-assignments-editor" className="container mt-4">
       <div className="row mb-3">
