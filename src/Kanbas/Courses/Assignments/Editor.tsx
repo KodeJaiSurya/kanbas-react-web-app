@@ -1,39 +1,71 @@
 import "./index.css";
-import { useParams, useNavigate } from "react-router";
+import { useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { state } from "../../store";
-import { addAssignment, setAssignment, updateAssignment } from "./reducer";
-import { useEffect } from "react";
+import { addAssignment, updateAssignment } from "./reducer";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
+import * as coursesClient from "../client";
+import * as assignmentsClient from "./client";
+import FacultyRestrictedRoute from "../../FacultyRestrictedRoute";
+import StudentRoute from "../../Dashboard/StudentRoute";
 export default function AssignmentEditor() {
   const { aid, cid } = useParams();
-  const navigate = useNavigate();
-  const assignmentList = useSelector(
-    (state: state) => state.assignmentsReducer.assignments
+
+  const { assignments } = useSelector((state: any) => state.assignmentsReducer);
+  const assignment = assignments.find(
+    (assignment: any) => assignment._id === aid
   );
-  const assignment = useSelector(
-    (state: state) => state.assignmentsReducer.assignment
-  );
+  // const assignment =
+  //   aid === "Editor"
+  //     ? null
+  //     : assignments.filter((assignment: any) => assignment._id === aid);
+
+  const [assignmentTitle, setAssignmentTitle] = useState("");
+  const [assignmentD, setAssignmentD] = useState("");
+  const [assignmentDuedate, setAssignmentDuedate] = useState("");
+  const [assignmentAvaildate, setAssignmentAvaildate] = useState("");
+  const [assignmentPoints, setAssignmentPoints] = useState("");
   const dispatch = useDispatch();
-  const handleSave = () => {
-    if (aid !== undefined) {
-      if (!aid.localeCompare("Editor")) {
-        dispatch(addAssignment({ ...assignment, course: cid }));
-      } else {
-        dispatch(updateAssignment(assignment));
-      }
-    }
-    navigate(`/Kanbas/Courses/${cid}/Assignments`);
+  const saveAssignment = async () => {
+    const a = {
+      _id: aid,
+      title: assignmentTitle,
+      description: assignmentD,
+      course: cid,
+      duedate: assignmentDuedate,
+      availabledate: assignmentAvaildate,
+      points: assignmentPoints,
+    };
+    await assignmentsClient.updateAssignment(a);
+    dispatch(updateAssignment(a));
+  };
+
+  const createAssignmentForCourse = async () => {
+    if (!cid) return;
+    const newAssignment = {
+      title: assignmentTitle,
+      description: assignmentD,
+      course: cid,
+      duedate: assignmentDuedate,
+      availabledate: assignmentAvaildate,
+      points: assignmentPoints,
+    };
+    const assignment = await coursesClient.createAssignmentForCourse(
+      cid,
+      newAssignment
+    );
+    dispatch(addAssignment(assignment));
   };
 
   useEffect(() => {
-    let a = { title: "New Assignment", description: "" };
     if (aid !== "Editor") {
-      a = assignmentList.find((assignment) => assignment._id === aid);
+      setAssignmentTitle(assignment.title);
+      setAssignmentD(assignment.description);
+      setAssignmentDuedate(assignment.dueDate);
+      setAssignmentAvaildate(assignment.availableDate);
+      setAssignmentPoints(assignment.points);
     }
-    dispatch(setAssignment(a));
-  }, [aid, assignmentList, dispatch]);
+  }, [aid, assignment]);
   return (
     <div id="wd-assignments-editor" className="container mt-4">
       <div className="row mb-3">
@@ -46,9 +78,9 @@ export default function AssignmentEditor() {
             id="wd-name"
             className="form-control"
             value={assignment.title}
-            onChange={(e) =>
-              dispatch(setAssignment({ ...assignment, title: e.target.value }))
-            }
+            onChange={(e) => {
+              setAssignmentTitle(e.target.value);
+            }}
           />
         </div>
       </div>
@@ -64,11 +96,9 @@ export default function AssignmentEditor() {
             rows={10}
             cols={40}
             value={assignment.description}
-            onChange={(e) =>
-              dispatch(
-                setAssignment({ ...assignment, description: e.target.value })
-              )
-            }
+            onChange={(e) => {
+              setAssignmentD(e.target.value);
+            }}
           ></textarea>
         </div>
       </div>
@@ -83,9 +113,9 @@ export default function AssignmentEditor() {
             id="wd-points"
             className="form-control w-50 d-inline-block"
             value={assignment.points}
-            onChange={(e) =>
-              dispatch(setAssignment({ ...assignment, points: e.target.value }))
-            }
+            onChange={(e) => {
+              setAssignmentPoints(e.target.value);
+            }}
           />
         </div>
       </div>
@@ -221,11 +251,9 @@ export default function AssignmentEditor() {
                 className="form-control"
                 type="date"
                 value={assignment.dueDate}
-                onChange={(e) =>
-                  dispatch(
-                    setAssignment({ ...assignment, dueDate: e.target.value })
-                  )
-                }
+                onChange={(e) => {
+                  setAssignmentDuedate(e.target.value);
+                }}
               />
             </div>
 
@@ -249,14 +277,9 @@ export default function AssignmentEditor() {
                   className="form-control"
                   type="date"
                   value={assignment.availableDate}
-                  onChange={(e) =>
-                    dispatch(
-                      setAssignment({
-                        ...assignment,
-                        availableDate: e.target.value,
-                      })
-                    )
-                  }
+                  onChange={(e) => {
+                    setAssignmentAvaildate(e.target.value);
+                  }}
                 />
               </div>
               <div className="col">
@@ -265,11 +288,9 @@ export default function AssignmentEditor() {
                   className="form-control"
                   type="date"
                   value={assignment.dueDate}
-                  onChange={(e) =>
-                    dispatch(
-                      setAssignment({ ...assignment, dueDate: e.target.value })
-                    )
-                  }
+                  onChange={(e) => {
+                    setAssignmentDuedate(e.target.value);
+                  }}
                 />
               </div>
             </div>
@@ -283,23 +304,39 @@ export default function AssignmentEditor() {
 
       <div className="row mt-3">
         <hr />
-        <div className="col text-end">
-          <button
-            id="wd-save-button"
-            className="btn btn-success float-end"
-            onClick={handleSave}
-          >
-            Save
-          </button>
-
-          <Link
-            to={`/Kanbas/Courses/${cid}/Assignments`}
-            id="wd-cancel-button"
-            className="btn btn-secondary ms-2 me-2"
-          >
-            Cancel
-          </Link>
-        </div>
+        <FacultyRestrictedRoute>
+          <div className="col text-end">
+            <Link to={`/Kanbas/Courses/${cid}/Assignments`}>
+              <button
+                className="btn btn-success float-end"
+                id="wd-save-button"
+                onClick={
+                  aid !== "Editor" ? saveAssignment : createAssignmentForCourse
+                }
+              >
+                Save
+              </button>
+            </Link>
+            <Link
+              to={`/Kanbas/Courses/${cid}/Assignments`}
+              id="wd-cancel-button"
+              className="btn btn-secondary ms-2 me-2"
+            >
+              Cancel
+            </Link>
+          </div>
+        </FacultyRestrictedRoute>
+        <StudentRoute>
+          <div>
+            <Link
+              to={`/Kanbas/Courses/${cid}/Assignments`}
+              id="wd-cancel-button"
+              className="btn btn-secondary ms-2 me-2 float-end"
+            >
+              Go Back
+            </Link>
+          </div>
+        </StudentRoute>
       </div>
     </div>
   );

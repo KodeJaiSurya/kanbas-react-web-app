@@ -3,8 +3,9 @@ import "./index.css";
 import { useDispatch, useSelector } from "react-redux";
 import FacultyRestrictedRoute from "../FacultyRestrictedRoute";
 import StudentRoute from "./StudentRoute";
-import { useState } from "react";
-import { setEnrollments } from "./reducer";
+import { useEffect, useState } from "react";
+import { setEnrollments, enroll, unenroll } from "./reducer";
+import * as enrollmentsClient from "./client";
 export default function Dashboard({
   courses,
   course,
@@ -49,19 +50,22 @@ export default function Dashboard({
       })
     );
   };
-  const filteredCourses = courses.filter((course) => {
-    if (currentUser.role === "FACULTY") {
-      return true;
-    } else if (showAll) {
-      return true;
-    } else {
-      return (enrollments || []).some(
-        (enrollment: any) => enrollment.course === course._id
-      );
-    }
-  });
+  // const filteredCourses = courses.filter((course) => {
+  //   if (currentUser.role === "FACULTY") {
+  //     return true;
+  //   } else if (showAll) {
+  //     return true;
+  //   } else {
+  //     return (enrollments || []).some(
+  //       (enrollment: any) => enrollment.course === course._id
+  //     );
+  //   }
+  // });
 
   const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(setEnrollments(courses));
+  }, []);
   return (
     <div id="wd-dashboard">
       <h1 id="wd-dashboard-title">Dashboard</h1> <hr />
@@ -115,7 +119,7 @@ export default function Dashboard({
       </StudentRoute>
       <div id="wd-dashboard-courses" className="row">
         <div className="row row-cols-1 row-cols-md-5 g-4">
-          {filteredCourses.map((course) => (
+          {courses.map((course) => (
             <div className="wd-dashboard-course col" style={{ width: "300px" }}>
               <div className="card rounded-3 overflow-hidden">
                 <Link
