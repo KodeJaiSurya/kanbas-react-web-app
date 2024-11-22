@@ -30,10 +30,7 @@ export default function Dashboard({
 }) {
   const { currentUser } = useSelector((state: any) => state.accountReducer);
   const dispatch = useDispatch();
-  //const { enrollments } = useSelector((state: any) => state.enrollmentsReducer);
-
   const [showAll, setShowAll] = useState(false);
-
   const toggleShowCourses = () => {
     setShowAll(!showAll);
   };
@@ -57,7 +54,6 @@ export default function Dashboard({
   return (
     <div id="wd-dashboard">
       <h1 id="wd-dashboard-title">Dashboard</h1> <hr />
-      {/* <pre>{JSON.stringify(enrollments, null, 2)}</pre> */}
       <hr />
       <FacultyRestrictedRoute>
         <h5>
