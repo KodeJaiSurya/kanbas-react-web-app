@@ -11,7 +11,7 @@ const enrollmentsSlice = createSlice({
     setEnrollments: (state, action) => {
       state.enrollments = action.payload;
     },
-    enroll: (state, { payload: enroll }) => {
+    enrollCourse: (state, { payload: enroll }) => {
       const newCourse: any = {
         _id: new Date().getTime().toString(),
         user: enroll.user,
@@ -20,7 +20,7 @@ const enrollmentsSlice = createSlice({
       state.enrollments = [...state.enrollments, enroll] as any;
       setEnrollments(state.enrollments);
     },
-    unenroll: (state, { payload: unenroll }) => {
+    unenrollCourse: (state, { payload: unenroll }) => {
       state.enrollments = state.enrollments.filter(
         (enrollment: any) =>
           enrollment.course !== unenroll.course ||
@@ -31,5 +31,6 @@ const enrollmentsSlice = createSlice({
   },
 });
 
-export const { setEnrollments, enroll, unenroll } = enrollmentsSlice.actions;
+export const { setEnrollments, enrollCourse, unenrollCourse } =
+  enrollmentsSlice.actions;
 export default enrollmentsSlice.reducer;

@@ -12,60 +12,33 @@ export default function AssignmentEditor() {
   const { aid, cid } = useParams();
 
   const { assignments } = useSelector((state: any) => state.assignmentsReducer);
-  const assignment = assignments.find(
-    (assignment: any) => assignment._id === aid
-  );
-  // const assignment =
-  //   aid === "Editor"
-  //     ? null
-  //     : assignments.filter((assignment: any) => assignment._id === aid);
 
-  const [assignmentTitle, setAssignmentTitle] = useState("");
-  const [assignmentD, setAssignmentD] = useState("");
-  const [assignmentDuedate, setAssignmentDuedate] = useState("");
-  const [assignmentAvaildate, setAssignmentAvaildate] = useState("");
-  const [assignmentPoints, setAssignmentPoints] = useState("");
   const dispatch = useDispatch();
   const saveAssignment = async () => {
-    const a = {
-      _id: aid,
-      title: assignmentTitle,
-      description: assignmentD,
-      course: cid,
-      duedate: assignmentDuedate,
-      availabledate: assignmentAvaildate,
-      points: assignmentPoints,
-    };
-    await assignmentsClient.updateAssignment(a);
-    dispatch(updateAssignment(a));
+    await assignmentsClient.updateAssignment(assignment);
+    dispatch(updateAssignment(assignment));
   };
 
   const createAssignmentForCourse = async () => {
     if (!cid) return;
-    const newAssignment = {
-      title: assignmentTitle,
-      description: assignmentD,
-      course: cid,
-      duedate: assignmentDuedate,
-      availabledate: assignmentAvaildate,
-      points: assignmentPoints,
-    };
-    const assignment = await coursesClient.createAssignmentForCourse(
-      cid,
-      newAssignment
-    );
-    dispatch(addAssignment(assignment));
+    const a = await coursesClient.createAssignmentForCourse(cid, assignment);
+    dispatch(addAssignment(a));
   };
+
+  const [assignment, setAssignment] = useState({
+    title: "New Assignment",
+    description: "Description",
+    dueDate: "",
+    availableDate: "",
+    points: 100,
+  });
 
   useEffect(() => {
     if (aid !== "Editor") {
-      setAssignmentTitle(assignment.title);
-      setAssignmentD(assignment.description);
-      setAssignmentDuedate(assignment.dueDate);
-      setAssignmentAvaildate(assignment.availableDate);
-      setAssignmentPoints(assignment.points);
+      const a = assignments.find((a: any) => a._id === aid);
+      setAssignment(a);
     }
-  }, [aid, assignment]);
+  }, [aid]);
   return (
     <div id="wd-assignments-editor" className="container mt-4">
       <div className="row mb-3">
@@ -79,7 +52,7 @@ export default function AssignmentEditor() {
             className="form-control"
             value={assignment.title}
             onChange={(e) => {
-              setAssignmentTitle(e.target.value);
+              setAssignment({ ...assignment, title: e.target.value });
             }}
           />
         </div>
@@ -97,7 +70,7 @@ export default function AssignmentEditor() {
             cols={40}
             value={assignment.description}
             onChange={(e) => {
-              setAssignmentD(e.target.value);
+              setAssignment({ ...assignment, description: e.target.value });
             }}
           ></textarea>
         </div>
@@ -114,7 +87,10 @@ export default function AssignmentEditor() {
             className="form-control w-50 d-inline-block"
             value={assignment.points}
             onChange={(e) => {
-              setAssignmentPoints(e.target.value);
+              setAssignment({
+                ...assignment,
+                points: parseInt(e.target.value),
+              });
             }}
           />
         </div>
@@ -252,7 +228,7 @@ export default function AssignmentEditor() {
                 type="date"
                 value={assignment.dueDate}
                 onChange={(e) => {
-                  setAssignmentDuedate(e.target.value);
+                  setAssignment({ ...assignment, dueDate: e.target.value });
                 }}
               />
             </div>
@@ -278,7 +254,10 @@ export default function AssignmentEditor() {
                   type="date"
                   value={assignment.availableDate}
                   onChange={(e) => {
-                    setAssignmentAvaildate(e.target.value);
+                    setAssignment({
+                      ...assignment,
+                      availableDate: e.target.value,
+                    });
                   }}
                 />
               </div>
@@ -289,7 +268,7 @@ export default function AssignmentEditor() {
                   type="date"
                   value={assignment.dueDate}
                   onChange={(e) => {
-                    setAssignmentDuedate(e.target.value);
+                    setAssignment({ ...assignment, dueDate: e.target.value });
                   }}
                 />
               </div>

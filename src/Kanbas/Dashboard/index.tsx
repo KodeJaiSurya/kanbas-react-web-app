@@ -4,26 +4,33 @@ import { useDispatch, useSelector } from "react-redux";
 import FacultyRestrictedRoute from "../FacultyRestrictedRoute";
 import StudentRoute from "./StudentRoute";
 import { useEffect, useState } from "react";
-import { setEnrollments, enroll, unenroll } from "./reducer";
+import { setEnrollments, enrollCourse, unenrollCourse } from "./reducer";
 import * as enrollmentsClient from "./client";
+
 export default function Dashboard({
   courses,
   course,
+  allCourses,
+  setAll,
   setCourse,
+  setCourses,
   addNewCourse,
   deleteCourse,
   updateCourse,
 }: {
   courses: any[];
   course: any;
+  allCourses: any[];
+  setAll: (allCourses: any) => void;
   setCourse: (course: any) => void;
+  setCourses: (courses: any) => void;
   addNewCourse: () => void;
   deleteCourse: (course: any) => void;
   updateCourse: () => void;
 }) {
   const { currentUser } = useSelector((state: any) => state.accountReducer);
-
-  const { enrollments } = useSelector((state: any) => state.enrollmentsReducer);
+  const dispatch = useDispatch();
+  //const { enrollments } = useSelector((state: any) => state.enrollmentsReducer);
 
   const [showAll, setShowAll] = useState(false);
 
@@ -31,38 +38,19 @@ export default function Dashboard({
     setShowAll(!showAll);
   };
 
-  const enroll = (courseId: string) => {
-    dispatch(
-      setEnrollments({
-        user: currentUser._id,
-        course: courseId,
-        enroll: true,
-      })
-    );
+  const enroll = async (courseId: string) => {
+    const newCourses = await enrollmentsClient.enrollCourse(courseId);
+    dispatch(enrollCourse({ user: currentUser._id, course: courseId }));
+    setCourses(newCourses);
   };
 
-  const unenroll = (courseID: string) => {
-    dispatch(
-      setEnrollments({
-        user: currentUser._id,
-        course: courseID,
-        enroll: false,
-      })
-    );
+  const unenroll = async (courseID: string) => {
+    const newCourses = await enrollmentsClient.unenrollCourse(courseID);
+    dispatch(unenrollCourse({ user: currentUser._id, course: courseID }));
+    setCourses(newCourses);
   };
-  // const filteredCourses = courses.filter((course) => {
-  //   if (currentUser.role === "FACULTY") {
-  //     return true;
-  //   } else if (showAll) {
-  //     return true;
-  //   } else {
-  //     return (enrollments || []).some(
-  //       (enrollment: any) => enrollment.course === course._id
-  //     );
-  //   }
-  // });
+  const displaycourses = showAll ? allCourses : courses;
 
-  const dispatch = useDispatch();
   useEffect(() => {
     dispatch(setEnrollments(courses));
   }, []);
@@ -113,13 +101,12 @@ export default function Dashboard({
             onClick={toggleShowCourses}
           >
             Enrollment
-            {/* {showAll ? "Enrollment" : "Enrollment1"} */}
           </button>
         </div>
       </StudentRoute>
       <div id="wd-dashboard-courses" className="row">
         <div className="row row-cols-1 row-cols-md-5 g-4">
-          {courses.map((course) => (
+          {displaycourses.map((course) => (
             <div className="wd-dashboard-course col" style={{ width: "300px" }}>
               <div className="card rounded-3 overflow-hidden">
                 <Link
@@ -166,8 +153,8 @@ export default function Dashboard({
                       </button>
                     </FacultyRestrictedRoute>
                     <StudentRoute>
-                      {(enrollments || []).some(
-                        (enrollment: any) => enrollment.course === course._id
+                      {(courses || []).some(
+                        (enrollment: any) => enrollment._id === course._id
                       ) ? (
                         <button
                           onClick={(event) => {

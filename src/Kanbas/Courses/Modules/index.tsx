@@ -33,7 +33,7 @@ export default function Modules() {
   };
   useEffect(() => {
     fetchModules();
-  });
+  }, []);
   const removeModule = async (moduleId: string) => {
     await modulesClient.deleteModule(moduleId);
     dispatch(deleteModule(moduleId));

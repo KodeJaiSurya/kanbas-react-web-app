@@ -18,7 +18,9 @@ import * as assignmentClient from "./client";
 
 export default function Assignments() {
   const { cid } = useParams();
-  const assignments = useSelector((state: any) => state.assignmentsReducer);
+  const assignments = useSelector(
+    (state: any) => state.assignmentsReducer.assignments
+  );
   const dispatch = useDispatch();
   const delAssignment = async (aID: string) => {
     const dialog = window.confirm(
@@ -38,7 +40,7 @@ export default function Assignments() {
   };
   useEffect(() => {
     fetchAssignments();
-  });
+  }, []);
 
   return (
     <div
