@@ -17,6 +17,9 @@ export default function Dashboard({
   addNewCourse,
   deleteCourse,
   updateCourse,
+  enrolling,
+  setEnrolling,
+  updateEnrollment,
 }: {
   courses: any[];
   course: any;
@@ -27,33 +30,29 @@ export default function Dashboard({
   addNewCourse: () => void;
   deleteCourse: (course: any) => void;
   updateCourse: () => void;
+  enrolling: boolean;
+  setEnrolling: (enrolling: boolean) => void;
+  updateEnrollment: (courseId: string, enrolled: boolean) => void;
 }) {
   const { currentUser } = useSelector((state: any) => state.accountReducer);
   const dispatch = useDispatch();
   const [showAll, setShowAll] = useState(false);
-  const toggleShowCourses = () => {
-    setShowAll(!showAll);
-  };
-
-  const enroll = async (courseId: string) => {
-    const newCourses = await enrollmentsClient.enrollCourse(courseId);
-    dispatch(enrollCourse({ user: currentUser._id, course: courseId }));
-    setCourses(newCourses);
-  };
-
-  const unenroll = async (courseID: string) => {
-    const newCourses = await enrollmentsClient.unenrollCourse(courseID);
-    dispatch(unenrollCourse({ user: currentUser._id, course: courseID }));
-    setCourses(newCourses);
-  };
-  const displaycourses = showAll ? allCourses : courses;
 
   useEffect(() => {
     dispatch(setEnrollments(courses));
   }, []);
   return (
     <div id="wd-dashboard">
-      <h1 id="wd-dashboard-title">Dashboard</h1> <hr />
+      <h1 id="wd-dashboard-title">
+        Dashboard
+        <button
+          onClick={() => setEnrolling(!enrolling)}
+          className="float-end btn btn-primary"
+        >
+          {enrolling ? "My Courses" : "All Courses"}
+        </button>
+      </h1>
+      <hr />
       <hr />
       <FacultyRestrictedRoute>
         <h5>
@@ -90,19 +89,9 @@ export default function Dashboard({
       </FacultyRestrictedRoute>
       <h2 id="wd-dashboard-published">Published Courses ({courses.length})</h2>
       <hr />
-      <StudentRoute>
-        <div>
-          <button
-            className="btn btn-primary float-end"
-            onClick={toggleShowCourses}
-          >
-            Enrollment
-          </button>
-        </div>
-      </StudentRoute>
       <div id="wd-dashboard-courses" className="row">
         <div className="row row-cols-1 row-cols-md-5 g-4">
-          {displaycourses.map((course) => (
+          {courses.map((course) => (
             <div className="wd-dashboard-course col" style={{ width: "300px" }}>
               <div className="card rounded-3 overflow-hidden">
                 <Link
@@ -117,6 +106,19 @@ export default function Dashboard({
                   />
                   <div className="card-body">
                     <h5 className="wd-dashboard-course-title card-title">
+                      {enrolling && (
+                        <button
+                          className={`btn ${
+                            course.enrolled ? "btn-danger" : "btn-success"
+                          } float-end`}
+                          onClick={(event) => {
+                            event.preventDefault();
+                            updateEnrollment(course._id, !course.enrolled);
+                          }}
+                        >
+                          {course.enrolled ? "Unenroll" : "Enroll"}
+                        </button>
+                      )}
                       {course.name}
                     </h5>
                     <p
@@ -126,53 +128,30 @@ export default function Dashboard({
                       {course.description}
                     </p>
                     <button className="btn btn-primary"> Go </button>
-                    <FacultyRestrictedRoute>
-                      <button
-                        onClick={(event) => {
-                          event.preventDefault();
-                          deleteCourse(course._id);
-                        }}
-                        className="btn btn-danger float-end"
-                        id="wd-delete-course-click"
-                      >
-                        Delete
-                      </button>
-                      <button
-                        id="wd-edit-course-click"
-                        onClick={(event) => {
-                          event.preventDefault();
-                          setCourse(course);
-                        }}
-                        className="btn btn-warning me-2 float-end"
-                      >
-                        Edit
-                      </button>
-                    </FacultyRestrictedRoute>
-                    <StudentRoute>
-                      {(courses || []).some(
-                        (enrollment: any) => enrollment._id === course._id
-                      ) ? (
+                    {!enrolling && (
+                      <FacultyRestrictedRoute>
                         <button
                           onClick={(event) => {
                             event.preventDefault();
-                            unenroll(course._id);
+                            deleteCourse(course._id);
                           }}
                           className="btn btn-danger float-end"
+                          id="wd-delete-course-click"
                         >
-                          Unenroll
+                          Delete
                         </button>
-                      ) : (
                         <button
+                          id="wd-edit-course-click"
                           onClick={(event) => {
                             event.preventDefault();
-                            enroll(course._id);
+                            setCourse(course);
                           }}
-                          className="btn btn-success float-end"
+                          className="btn btn-warning me-2 float-end"
                         >
-                          Enroll
+                          Edit
                         </button>
-                      )}
-                    </StudentRoute>
+                      </FacultyRestrictedRoute>
+                    )}
                   </div>
                 </Link>
               </div>
