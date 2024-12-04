@@ -1,19 +1,14 @@
 import { Link } from "react-router-dom";
 import "./index.css";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import FacultyRestrictedRoute from "../FacultyRestrictedRoute";
-import StudentRoute from "./StudentRoute";
-import { useEffect, useState } from "react";
-import { setEnrollments, enrollCourse, unenrollCourse } from "./reducer";
-import * as enrollmentsClient from "./client";
+import { useEffect } from "react";
+import { setEnrollments } from "./reducer";
 
 export default function Dashboard({
   courses,
   course,
-  allCourses,
-  setAll,
   setCourse,
-  setCourses,
   addNewCourse,
   deleteCourse,
   updateCourse,
@@ -23,10 +18,7 @@ export default function Dashboard({
 }: {
   courses: any[];
   course: any;
-  allCourses: any[];
-  setAll: (allCourses: any) => void;
   setCourse: (course: any) => void;
-  setCourses: (courses: any) => void;
   addNewCourse: () => void;
   deleteCourse: (course: any) => void;
   updateCourse: () => void;
@@ -34,9 +26,8 @@ export default function Dashboard({
   setEnrolling: (enrolling: boolean) => void;
   updateEnrollment: (courseId: string, enrolled: boolean) => void;
 }) {
-  const { currentUser } = useSelector((state: any) => state.accountReducer);
+  //const { currentUser } = useSelector((state: any) => state.accountReducer);
   const dispatch = useDispatch();
-  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     dispatch(setEnrollments(courses));
@@ -106,19 +97,6 @@ export default function Dashboard({
                   />
                   <div className="card-body">
                     <h5 className="wd-dashboard-course-title card-title">
-                      {enrolling && (
-                        <button
-                          className={`btn ${
-                            course.enrolled ? "btn-danger" : "btn-success"
-                          } float-end`}
-                          onClick={(event) => {
-                            event.preventDefault();
-                            updateEnrollment(course._id, !course.enrolled);
-                          }}
-                        >
-                          {course.enrolled ? "Unenroll" : "Enroll"}
-                        </button>
-                      )}
                       {course.name}
                     </h5>
                     <p
@@ -128,6 +106,19 @@ export default function Dashboard({
                       {course.description}
                     </p>
                     <button className="btn btn-primary"> Go </button>
+                    {enrolling && (
+                      <button
+                        className={`btn ${
+                          course.enrolled ? "btn-danger" : "btn-success"
+                        } float-end`}
+                        onClick={(event) => {
+                          event.preventDefault();
+                          updateEnrollment(course._id, !course.enrolled);
+                        }}
+                      >
+                        {course.enrolled ? "Unenroll" : "Enroll"}
+                      </button>
+                    )}
                     {!enrolling && (
                       <FacultyRestrictedRoute>
                         <button

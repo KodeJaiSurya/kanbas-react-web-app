@@ -21,7 +21,6 @@ export default function Kanbas() {
     image: "/images/reactjs.jpg",
     description: "New Description",
   });
-  const [allCourses, setAll] = useState<any[]>([]);
   const { currentUser } = useSelector((state: any) => state.accountReducer);
   const [enrolling, setEnrolling] = useState<boolean>(false);
   const findCoursesForUser = async () => {
@@ -112,10 +111,7 @@ export default function Kanbas() {
                 <Dashboard
                   courses={courses}
                   course={course}
-                  allCourses={allCourses}
-                  setAll={setAll}
                   setCourse={setCourse}
-                  setCourses={setCourses}
                   addNewCourse={addNewCourse}
                   deleteCourse={deleteCourse}
                   updateCourse={updateCourse}
