@@ -1,10 +1,8 @@
-import LessonControlButtons from "../Modules/LessonControlButtons";
 import { BsGripVertical, BsPlus } from "react-icons/bs";
 import { IoMdArrowDropdown, IoMdSearch } from "react-icons/io";
-import { HiOutlineRocketLaunch } from "react-icons/hi2";
 import { useParams } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import FacultyRestrictedRoute from "../../FacultyRestrictedRoute";
 import { FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -13,6 +11,7 @@ import * as coursesClient from "../client";
 import { setQuizzes, deleteQuiz, addQuiz } from "./reducer";
 import { IoEllipsisVertical } from "react-icons/io5";
 import { GrDocumentText } from "react-icons/gr";
+import QuizControlButtons from "./QuizControlButtons";
 
 export default function Quizzes() {
   const { cid } = useParams();
@@ -159,7 +158,10 @@ export default function Quizzes() {
                     {quiz.questions} Questions
                   </p>
                 </div>
-                <LessonControlButtons />
+                <QuizControlButtons
+                  quiz={quiz}
+                  deleteQuiz={(quizId) => delQuiz(quizId)}
+                />
               </li>
             ))}
           </ul>
