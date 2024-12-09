@@ -5,9 +5,9 @@ export default function QuizControlButtons() {
     <div className="float-end">
       <input
         id="wd-quiz-progress"
-        className="fs-5 rounded-5 list-assignment-progress"
+        className="fs-6 rounded-5 list-assignment-progress"
         type="text"
-        value="40% of Total"
+        value="         40% of Total"
         readOnly
       />
       <BsPlus className="fs-2" />

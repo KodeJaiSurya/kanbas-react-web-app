@@ -1,110 +1,170 @@
-import QuizControls from "./QuizControls";
-import QuizControlButtons from "./QuizControlButtons";
 import LessonControlButtons from "../Modules/LessonControlButtons";
-import { BsGripVertical } from "react-icons/bs";
-import { IoMdArrowDropdown } from "react-icons/io";
+import { BsGripVertical, BsPlus } from "react-icons/bs";
+import { IoMdArrowDropdown, IoMdSearch } from "react-icons/io";
 import { HiOutlineRocketLaunch } from "react-icons/hi2";
 import { useParams } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import FacultyRestrictedRoute from "../../FacultyRestrictedRoute";
-import { FaTrash } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import * as quizzesClient from "./client";
+import * as coursesClient from "../client";
+import { setQuizzes, deleteQuiz, addQuiz } from "./reducer";
+import { IoEllipsisVertical } from "react-icons/io5";
+import { GrDocumentText } from "react-icons/gr";
 
 export default function Quizzes() {
   const { cid } = useParams();
   const { quizzes } = useSelector((state: any) => state.quizzesReducer);
   const dispatch = useDispatch();
-  const currentDate = new Date().toDateString();
+  const fetchQuizzes = async () => {
+    const quizzes = await coursesClient.findQuizzesForCourse(cid as string);
+    dispatch(setQuizzes(quizzes));
+  };
+  useEffect(() => {
+    fetchQuizzes();
+  }, []);
+
+  const delQuiz = async (qID: string) => {
+    const dialog = window.confirm("Are you sure you want to delete this Quiz?");
+    if (dialog) {
+      await quizzesClient.deleteQuiz(qID);
+      dispatch(deleteQuiz(qID));
+    }
+  };
+
+  const getQuizStatus = (quiz: any) => {
+    const currentDate = new Date();
+    const startDate = new Date(quiz.availableDate);
+    const dueDate = new Date(quiz.dueDate);
+    if (currentDate < startDate) {
+      return (
+        <>
+          <b>Not Available Until </b>
+          {startDate.toLocaleDateString("en-US", {
+            month: "long",
+            day: "numeric",
+          })}{" "}
+          at 11:59 PM
+        </>
+      );
+    }
+    if (currentDate <= dueDate && currentDate >= startDate) {
+      return (
+        <>
+          <b>Available </b>
+          {startDate.toLocaleDateString("en-US", {
+            month: "long",
+            day: "numeric",
+          })}{" "}
+          at 11:59 PM
+        </>
+      );
+    }
+    return (
+      <>
+        <b>Closed </b>
+        {startDate.toLocaleDateString("en-US", {
+          month: "long",
+          day: "numeric",
+        })}{" "}
+        at 11:59 PM
+      </>
+    );
+  };
+
   return (
     <div>
-      <QuizControls />
+      {/* <QuizControls /> */}
+      <div id="wd-assign-controls" className="text-nowrap">
+        <FacultyRestrictedRoute>
+          <button
+            id="wd-context-menu-quiz"
+            className="btn btn-lg list-assignment-progress me-1 float-end"
+          >
+            <IoEllipsisVertical className="fs-4" />
+          </button>
+          <Link to={`/Kanbas/Courses/${cid}/Quizzes/Editor`}>
+            <button
+              id="wd-add-quiz-btn"
+              className="btn btn-lg btn-danger me-1 float-end"
+              onClick={addQuiz}
+            >
+              <FaPlus
+                className="position-relative me-2"
+                style={{ bottom: "1px" }}
+              />
+              Quiz
+            </button>
+          </Link>
+        </FacultyRestrictedRoute>
+        <div
+          id="wd-search-assignment"
+          className="input-group border border-black flex-box ms-2 mt-4"
+          style={{ width: "250px", height: "45px" }}
+        >
+          <span className="input-group-text bg-white border-0">
+            <IoMdSearch />
+          </span>
+          <input
+            type="text"
+            className="border-0"
+            placeholder="Search..."
+            style={{ width: "209px" }}
+          />
+        </div>
+      </div>
       <br />
       <br />
-      <ul id="wd-quizzes" className="list-group rounded-0">
-        <li className="wd-assignment list-group-item p-0 mb-5 fs-5 border-gray">
-          <div className="wd-title p-3 ps-2 bg-secondary">
-            {/* <BsGripVertical className="me-2 fs-3" /> */}
+      <ul id="wd-quizzes-list" className="list-group rounded-0">
+        <li className="wd-quiz list-group-item p-0 mb-5 fs-5 border-gray">
+          <div className="wd-quiz-title p-3 ps-2 bg-secondary">
+            <BsGripVertical className="me-2 fs-3" />
             <IoMdArrowDropdown className="me-2 fs-3" />
             <b>QUIZZES</b>
-            {/* <QuizControlButtons/> */}
+            {/* <QuizControlButtons /> */}
+            <div className="float-end">
+              <input
+                id="wd-quiz-progress"
+                className="fs-6 rounded-5 list-assignment-progress"
+                type="text"
+                value="         40% of Total"
+                readOnly
+              />
+              <BsPlus className="fs-2" />
+              <IoEllipsisVertical className="fs-4" />
+            </div>
           </div>
           <ul className="wd-lessons list-group rounded-0">
-            {quizzes
-              .filter((quiz: any) => quiz.course === cid)
-              .map((quiz: any) => (
-                <li className="wd-lesson list-group-item p-3 ps-1">
-                  <table border={0} width="100%">
-                    {/* <td valign = "middle"><BsGripVertical className="me-2 fs-3" /></td> */}
-                    <td valign="middle">
-                      <HiOutlineRocketLaunch className="me-2 fs-3 green" />
-                    </td>
-                    <td>
-                      <table>
-                        <tr>
-                          <Link
-                            className="black"
-                            // onClick={() => dispatch(setAssignment(assignment))}
-                            to={`/Kanbas/Courses/${cid}/Quizzes/${quiz._id}`}
-                          >
-                            {quiz.title}
-                          </Link>
-                        </tr>
-                        <tr>
-                          {" "}
-                          {Date.parse(currentDate) <
-                          Date.parse(quiz.start_date) ? (
-                            <>
-                              {" "}
-                              <b>Not Available Until </b>
-                              {new Date(quiz.start_date).toLocaleDateString(
-                                "en-US",
-                                { month: "long", day: "numeric" }
-                              )}
-                            </>
-                          ) : Date.parse(currentDate) >
-                              Date.parse(quiz.start_date) &&
-                            Date.parse(currentDate) <
-                              Date.parse(quiz.due_date) ? (
-                            <b> Available</b>
-                          ) : (
-                            <b> Closed</b>
-                          )}
-                          &nbsp;| <b>Due </b>
-                          {new Date(quiz.due_date).toLocaleDateString("en-US", {
-                            month: "long",
-                            day: "numeric",
-                          })}
-                          &nbsp; at 11:59 pm | {quiz.points} pts |{" "}
-                          {quiz.questions} Questions
-                        </tr>
-                        {/* <tr><b>Due </b> 
-                      {new Date(quiz.due_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })} 
-                      &nbsp; at 11:59 pm | {quiz.points} pts</tr> */}
-                      </table>
-                    </td>
-                    <td valign="middle">
-                      {/* <ProtectedRouteFaculty>
-                    <button id="wd-delete-assignment-btn" className="btn btn-lg me-1 float-end" 
-                    data-bs-toggle="modal" data-bs-target="#wd-delete-assignment-dialog" 
-                    onClick={() => setAssignmentId(assignment._id)}>
-                      <FaTrash className="text-danger me-3 mb-1 float-end" />
-                      <div>{assignment._id}</div>
-                    </button>
-                    
-                  </ProtectedRouteFaculty> */}
-                      <LessonControlButtons />
-                    </td>
-                  </table>
-                </li>
-              ))}
+            {quizzes?.map((quiz: any) => (
+              <li className="d-flex align-items-center wd-lesson list-group-item ps-1">
+                <BsGripVertical className="me-2 fs-3" />
+                <GrDocumentText className="me-2 fs-3" />
+                <div>
+                  <a
+                    className="fs-6"
+                    href={`/Kanbas/Courses/${cid}/Quizzes/${quiz._id}`}
+                  >
+                    {quiz.title}
+                  </a>
+                  <p className="fs-6">
+                    {getQuizStatus(quiz)} &nbsp;|&nbsp;
+                    <b>Due: </b>
+                    {new Date(quiz.dueDate).toLocaleDateString("en-US", {
+                      month: "long",
+                      day: "numeric",
+                    })}{" "}
+                    at 11:59 pm &nbsp;|&nbsp; {quiz.points} pts |{" "}
+                    {quiz.questions} Questions
+                  </p>
+                </div>
+                <LessonControlButtons />
+              </li>
+            ))}
           </ul>
         </li>
       </ul>
-      {/* <DeleteAssignment dialogTitle="Delete Assignment ?" assignment_id={assignmentId}
-                      deleteAssignment={(assignment_id) => {
-                        dispatch(deleteAssignment(assignment_id)); 
-                      }} /> */}
     </div>
   );
 }

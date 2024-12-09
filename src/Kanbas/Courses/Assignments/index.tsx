@@ -121,10 +121,10 @@ export default function Assignments() {
                   </a>
 
                   <p className="wd-assignment-text fs-6">
-                    Multiple Modules | <b>Not available until</b>{" "}
+                    Multiple Modules | <b>Not available until</b>
                     {assignment.availableDate} at 12:00am |
                     <br />
-                    <b>Due</b> {assignment.dueDate} at 11:59pm |{" "}
+                    <b>Due</b> {assignment.dueDate} at 11:59pm |
                     {assignment.points}pts
                   </p>
                 </div>
