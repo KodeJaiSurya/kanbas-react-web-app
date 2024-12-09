@@ -1,17 +1,25 @@
 import { IoEllipsisVertical } from "react-icons/io5";
-import { BsPlus } from "react-icons/bs";
-export default function QuizControlButtons() {
+import GreenCheckmark from "../Modules/GreenCheckmark";
+import { useParams } from "react-router";
+import { useDispatch } from "react-redux";
+import * as quizzesClient from "./client";
+import { updateQuiz, deleteQuiz } from "./reducer";
+import FacultyRestrictedRoute from "../../FacultyRestrictedRoute";
+
+export default function QuizControlButtons({
+  quiz,
+  deleteQuiz,
+}: {
+  quiz: any[];
+  deleteQuiz: (quizId: string) => void;
+}) {
+  const { qid } = useParams();
+  const dispatch = useDispatch();
   return (
     <div className="float-end">
-      <input
-        id="wd-quiz-progress"
-        className="fs-6 rounded-5 list-assignment-progress"
-        type="text"
-        value="         40% of Total"
-        readOnly
-      />
-      <BsPlus className="fs-2" />
-      <IoEllipsisVertical className="fs-4" />
+      <button className="dropwdown">
+        <IoEllipsisVertical className="fs-4 float-end" />
+      </button>
     </div>
   );
 }
