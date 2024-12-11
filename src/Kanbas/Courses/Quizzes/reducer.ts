@@ -35,14 +35,15 @@ const initialState: QuizzesState = {
   quizzes: [],
   currentQuiz: null,
   loading: false,
-  error: null as string | null
-}
+  error: null as string | null,
+};
 const quizzesSlice = createSlice({
   name: "quizzes",
   initialState,
   reducers: {
     addQuiz: (state, { payload: quiz }) => {
       const newQuiz: any = {
+        // _id: new Date().getTime().toString(),
         _id: quiz._id,
         title: quiz.title,
         description: quiz.description,
@@ -66,19 +67,21 @@ const quizzesSlice = createSlice({
       state.quizzes = action.payload;
     },
     setCurrentQuiz: (state, action: PayloadAction<string>) => {
-      state.currentQuiz = state.quizzes.find(quiz => quiz._id === action.payload) || null;
+      state.currentQuiz =
+        state.quizzes.find((quiz) => quiz._id === action.payload) || null;
       console.log(state.currentQuiz);
       state.loading = false;
       state.error = null;
     },
 
-    updateQuizField: (state,       
+    updateQuizField: (
+      state,
       action: PayloadAction<{ field: keyof Quiz; value: any }>
     ) => {
       if (state.currentQuiz) {
         state.currentQuiz = {
           ...state.currentQuiz,
-          [action.payload.field]: action.payload.value
+          [action.payload.field]: action.payload.value,
         };
       }
     },
@@ -95,26 +98,33 @@ const quizzesSlice = createSlice({
       state.currentQuiz = null;
       state.loading = false;
       state.error = null;
-    }
+    },
   },
 });
-export const { addQuiz, deleteQuiz, updateQuiz, setQuizzes,setCurrentQuiz,
+export const {
+  addQuiz,
+  deleteQuiz,
+  updateQuiz,
+  setQuizzes,
+  setCurrentQuiz,
   updateQuizField,
   setLoading,
   setError,
-  clearCurrentQuiz  } =
-  quizzesSlice.actions;
+  clearCurrentQuiz,
+} = quizzesSlice.actions;
 
-  export const fetchQuizById = (quizId: string) => async (dispatch: any) => {
-    console.log("fetchQuizById", quizId);
-    try {
-      dispatch(setLoading(true));
-      dispatch(setCurrentQuiz(quizId));
-    } catch (error) {
-      dispatch(setError(error instanceof Error ? error.message : 'An error occurred'));
-    } finally {
-      dispatch(setLoading(false));
-    }
-  };
-  
+export const fetchQuizById = (quizId: string) => async (dispatch: any) => {
+  console.log("fetchQuizById", quizId);
+  try {
+    dispatch(setLoading(true));
+    dispatch(setCurrentQuiz(quizId));
+  } catch (error) {
+    dispatch(
+      setError(error instanceof Error ? error.message : "An error occurred")
+    );
+  } finally {
+    dispatch(setLoading(false));
+  }
+};
+
 export default quizzesSlice.reducer;

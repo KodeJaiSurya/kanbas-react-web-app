@@ -2,7 +2,7 @@ import { BsGripVertical, BsPlus } from "react-icons/bs";
 import { IoMdArrowDropdown, IoMdSearch } from "react-icons/io";
 import { useParams, useNavigate } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import FacultyRestrictedRoute from "../../FacultyRestrictedRoute";
 import { FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -12,6 +12,10 @@ import { setQuizzes, deleteQuiz, addQuiz } from "./reducer";
 import { IoEllipsisVertical } from "react-icons/io5";
 import { GrDocumentText } from "react-icons/gr";
 import QuizControlButtons from "./QuizControlButtons";
+import { updateQuiz } from "./reducer";
+import { MdDoNotDisturb, MdOutlineEdit } from "react-icons/md";
+import { FaTrash } from "react-icons/fa";
+import GreenCheckmark from "../Modules/GreenCheckmark";
 
 export default function Quizzes() {
   const { cid } = useParams();
@@ -73,6 +77,34 @@ export default function Quizzes() {
       </>
     );
   };
+  const createQuizForCourse = async () => {
+    if (!cid) return;
+    const q = await coursesClient.createQuizForCourse(cid, quiz);
+    dispatch(addQuiz(q));
+  };
+  const [quiz, setQuiz] = useState({
+    title: "New Quiz",
+    description: "Description",
+    dueDate: "",
+    availableDate: "",
+    points: 100,
+    unitlDate: "",
+    published: false,
+  });
+
+  const togglePublish = async () => {
+    const updatedQuiz = {
+      ...quiz,
+      published: !quiz.published,
+      course: cid,
+    };
+    await quizzesClient.updateQuiz(updatedQuiz);
+    dispatch(updateQuiz(updatedQuiz));
+  };
+  const renderPublishButtonText = () =>
+    quiz.published ? "Unpublish" : "Publish";
+  const renderPublishStatus = () =>
+    quiz.published ? <GreenCheckmark /> : <MdDoNotDisturb />;
 
   return (
     <div>
@@ -84,19 +116,19 @@ export default function Quizzes() {
           >
             <IoEllipsisVertical className="fs-4" />
           </button>
-          <Link to={`/Kanbas/Courses/${cid}/Quizzes/Editor`}>
-            <button
-              id="wd-add-quiz-btn"
-              className="btn btn-lg btn-danger me-1 float-end"
-              onClick={addQuiz}
-            >
-              <FaPlus
-                className="position-relative me-2"
-                style={{ bottom: "1px" }}
-              />
-              Quiz
-            </button>
-          </Link>
+          {/* <Link to={`/Kanbas/Courses/${cid}/Quizzes/Editor`}> */}
+          <button
+            id="wd-add-quiz-btn"
+            className="btn btn-lg btn-danger me-1 float-end"
+            onClick={createQuizForCourse}
+          >
+            <FaPlus
+              className="position-relative me-2"
+              style={{ bottom: "1px" }}
+            />
+            Quiz
+          </button>
+          {/* </Link> */}
         </FacultyRestrictedRoute>
         <div
           id="wd-search-assignment"
@@ -136,7 +168,7 @@ export default function Quizzes() {
             </div>
           </div>
           <ul className="wd-lessons list-group rounded-0">
-            {quizzes?.map((quiz: any) => (
+            {quizzes.map((quiz: any) => (
               <li className="d-flex align-items-center wd-lesson list-group-item ps-1">
                 <BsGripVertical className="me-2 fs-3" />
                 <GrDocumentText className="me-2 fs-3" />
@@ -160,10 +192,67 @@ export default function Quizzes() {
                     {quiz.questions} Questions
                   </p>
                 </div>
-                <QuizControlButtons
+                {/* <QuizControlButtons
                   quiz={quiz}
-                  deleteQuiz={(quizId) => delQuiz(quizId)}
-                />
+                  // onClick={() => delAssignment(assignment._id)}
+                  // deleteQuiz={(quizId) => delQuiz(quizId)}
+                  deleteQuiz={delQuiz}
+                /> */}
+
+                <div className="d-flex float-end border-0 flex-end">
+                  <FacultyRestrictedRoute>
+                    <div>{renderPublishStatus()}</div>
+                    <div className="dropdown d-inline float-end ">
+                      <button
+                        className="btn btn-white btn-lg"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        <IoEllipsisVertical className="fs-4" />
+                      </button>
+                      <ul className="dropdown-menu ">
+                        <li>
+                          <button
+                            className="dropdown-item"
+                            onClick={() =>
+                              navigate(
+                                `/Kanbas/Courses/${cid}/Quizzes/${quiz._id}`
+                              )
+                            }
+                          >
+                            <MdOutlineEdit className="text-primary me-2" />
+                            Edit
+                          </button>
+                        </li>
+                        <li>
+                          <button
+                            className="dropdown-item"
+                            data-bs-toggle="modal"
+                            data-bs-target={`#wd-delete-${quiz._id}-dialog`}
+                            onClick={() => deleteQuiz(quiz._id)}
+                          >
+                            <FaTrash className="text-danger me-2" />
+                            Delete
+                          </button>
+                        </li>
+                        <li>
+                          <button
+                            className="dropdown-item"
+                            onClick={togglePublish}
+                          >
+                            {quiz.published ? (
+                              <MdDoNotDisturb className="text-danger me-2" />
+                            ) : (
+                              <GreenCheckmark />
+                            )}
+                            {renderPublishButtonText()}
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  </FacultyRestrictedRoute>
+                </div>
               </li>
             ))}
           </ul>
