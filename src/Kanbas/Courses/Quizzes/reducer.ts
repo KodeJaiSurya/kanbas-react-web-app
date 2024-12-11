@@ -8,7 +8,7 @@ const quizzesSlice = createSlice({
   reducers: {
     addQuiz: (state, { payload: quiz }) => {
       const newQuiz: any = {
-        _id: new Date().getTime().toString(),
+        _id: quiz._id,
         title: quiz.title,
         description: quiz.description,
         points: quiz.points,

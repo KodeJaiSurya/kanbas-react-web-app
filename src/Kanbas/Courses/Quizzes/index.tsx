@@ -75,7 +75,6 @@ export default function Quizzes() {
 
   return (
     <div>
-      {/* <QuizControls /> */}
       <div id="wd-assign-controls" className="text-nowrap">
         <FacultyRestrictedRoute>
           <button
