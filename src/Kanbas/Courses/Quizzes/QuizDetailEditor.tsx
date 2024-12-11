@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import { updateQuizField, updateQuiz } from './reducer';
 import { Quiz } from './reducer';
 import Editor from 'react-simple-wysiwyg';
+import { updateQuiz as updateQuizApi } from './client';
 // import { RootState } from '.types';
 const quizTypes = ['Graded Quiz', 'Practice Quiz', 'Graded Survey', 'Ungraded Survey'];
 const assignmentGroups = ['Quizzes', 'Exams', 'Assignments', 'Project'];
@@ -31,6 +32,7 @@ const QuizDetailsEditor: React.FC = () => {
   const handleSave = async () => {
     try {
       if (quiz) {
+        console.log("updateQuiz", quiz);
         dispatch(updateQuiz(quiz));
       }
     } catch (error) {
@@ -39,11 +41,13 @@ const QuizDetailsEditor: React.FC = () => {
   };
 
   const saveQuiz = () => {
+    updateQuizApi(quiz);
     handleSave();
     navigate(`/Kanbas/Courses/${cid}/Quizzes/${qid}`);
   };
 
   const saveAndPublishQuiz = () => {
+    updateQuizApi(quiz);
     handleSave();
     navigate(`/Kanbas/Courses/${cid}/Quizzes`);
   };
