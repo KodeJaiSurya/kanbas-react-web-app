@@ -28,7 +28,7 @@ export default function QuizControlButtons({
     dispatch(updateQuiz(updatedQuiz));
   };
   const renderPublishButtonText = () =>
-    quiz.published ? "Unpublish" : "Publish";
+    quiz.published ? "Unpublish " : "Publish ";
   const renderPublishStatus = () =>
     quiz.published ? <GreenCheckmark /> : <MdDoNotDisturb />;
 
@@ -36,7 +36,7 @@ export default function QuizControlButtons({
     <div className="d-flex float-end border-0 flex-end">
       <FacultyRestrictedRoute>
         <div>{renderPublishStatus()}</div>
-        <div className="dropdown d-inline">
+        <div className="dropdown d-inline float-end ">
           <button
             className="btn btn-white btn-lg"
             type="button"
@@ -45,12 +45,12 @@ export default function QuizControlButtons({
           >
             <IoEllipsisVertical className="fs-4" />
           </button>
-          <ul className="dropdown-menu">
+          <ul className="dropdown-menu ">
             <li>
               <button
                 className="dropdown-item"
                 onClick={() =>
-                  navigate(`/Kanbas/Courses/${cid}/Quizzes/${quiz.id}`)
+                  navigate(`/Kanbas/Courses/${cid}/Quizzes/${quiz._id}`)
                 }
               >
                 <MdOutlineEdit className="text-primary me-2" />
@@ -60,9 +60,9 @@ export default function QuizControlButtons({
             <li>
               <button
                 className="dropdown-item"
-                data-bs-toggle="modal"
-                data-bs-target={`#wd-delete-${quiz.id}-dialog`}
-                onClick={() => deleteQuiz(quiz.id)}
+                // data-bs-toggle="modal"
+                // data-bs-target={`#wd-delete-${quiz._id}-dialog`}
+                onClick={() => deleteQuiz(quiz._id)}
               >
                 <FaTrash className="text-danger me-2" />
                 Delete
