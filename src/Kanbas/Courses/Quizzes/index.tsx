@@ -1,6 +1,6 @@
 import { BsGripVertical, BsPlus } from "react-icons/bs";
 import { IoMdArrowDropdown, IoMdSearch } from "react-icons/io";
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 import React, { useEffect } from "react";
 import FacultyRestrictedRoute from "../../FacultyRestrictedRoute";
@@ -17,6 +17,7 @@ export default function Quizzes() {
   const { cid } = useParams();
   const { quizzes } = useSelector((state: any) => state.quizzesReducer);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const fetchQuizzes = async () => {
     const quizzes = await coursesClient.findQuizzesForCourse(cid as string);
     dispatch(setQuizzes(quizzes));
@@ -142,7 +143,9 @@ export default function Quizzes() {
                 <div>
                   <a
                     className="fs-6"
-                    href={`/Kanbas/Courses/${cid}/Quizzes/${quiz._id}`}
+                    onClick={() => {
+                      navigate(`/Kanbas/Courses/${cid}/Quizzes/${quiz._id}`);
+                    }}
                   >
                     {quiz.title}
                   </a>
