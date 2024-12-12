@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { updateQuizField, updateQuiz } from "./reducer";
 import { Quiz } from "./reducer";
 import Editor from "react-simple-wysiwyg";
 import * as quizzesClient from "./client";
-
+import QuestionsEditor from "./Question/index";
 const quizTypes = [
   "Graded Quiz",
   "Practice Quiz",
@@ -383,7 +383,7 @@ const QuizDetailsEditor: React.FC = () => {
         {activeTab === "questions" && (
           <div className="card-body">
             <p className="text-muted">
-              Questions editor will be implemented separately
+              <QuestionsEditor />
             </p>
           </div>
         )}

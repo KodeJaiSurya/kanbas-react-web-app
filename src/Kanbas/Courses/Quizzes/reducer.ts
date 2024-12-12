@@ -52,6 +52,7 @@ const quizzesSlice = createSlice({
         dueDate: quiz.dueDate,
         availableDate: quiz.availableDate,
         unitlDate: quiz.unitlDate,
+        published: quiz.published,
       };
       state.quizzes = [...state.quizzes, newQuiz] as any;
     },
