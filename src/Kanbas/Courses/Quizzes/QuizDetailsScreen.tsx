@@ -111,7 +111,7 @@ const QuizDetailsScreen: React.FC = () => {
                       <span className="text-muted">Multiple Attempts</span>
                       <span>
                         {quiz.multipleAttempts
-                          ? `Yes (${quiz.numberOfAttempts} attempts)`
+                          ? `Yes (${quiz.numAttempts} attempts)`
                           : "No"}
                       </span>
                     </div>

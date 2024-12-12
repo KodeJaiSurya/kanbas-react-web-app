@@ -237,10 +237,10 @@ const QuizDetailsEditor: React.FC = () => {
                       type="number"
                       className="form-control"
                       style={{ width: "120px" }}
-                      value={quiz.numberOfAttempts || 1}
+                      value={quiz.numAttempts || 1}
                       onChange={(e) =>
                         handleInputChange(
-                          "numberOfAttempts",
+                          "numAttempts",
                           parseInt(e.target.value)
                         )
                       }

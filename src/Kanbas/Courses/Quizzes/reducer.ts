@@ -17,7 +17,7 @@ export interface Quiz {
   shuffleAnswers?: boolean;
   timeLimit?: number;
   multipleAttempts?: boolean;
-  numberOfAttempts?: number;
+  numAttempts?: number;
   showCorrectAnswers?: boolean;
   accessCode?: string;
   oneQuestionAtATime?: boolean;
